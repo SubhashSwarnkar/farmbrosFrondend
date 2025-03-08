@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { 
   Tabs, Tab, Box, Grid, Card, CardContent, Typography, 
   CardMedia, Button, TextField, Skeleton, Select, MenuItem, 
-  Snackbar, Alert
+  Snackbar, Alert, Divider
 } from "@mui/material";
 import axios from "axios";
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../redux/cartSlice';
+
+
 
 function Products({ storeId }) {
   const dispatch = useDispatch();
@@ -16,9 +18,7 @@ function Products({ storeId }) {
   const [selectedCategory, setSelectedCategory] = useState("All Products");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedQuantities, setSelectedQuantities] = useState({}); 
-
-  // Snackbar State
+  const [selectedQuantities, setSelectedQuantities] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -46,99 +46,47 @@ function Products({ storeId }) {
     fetchCategoryProducts();
   }, [storeId]);
 
-
   const filteredProducts = selectedCategory === "All Products"
-  ? allProducts
-  : productsByCategory[selectedCategory] || [];
+    ? allProducts
+    : productsByCategory[selectedCategory] || [];
 
-const searchFilteredProducts = filteredProducts.filter((product) =>
-  product.name.toLowerCase().includes(searchQuery.toLowerCase())
-);
+  const searchFilteredProducts = filteredProducts.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-const handleAddToCart = async (product) => {
-  if (!product || !product._id) {
-    console.error("Invalid product data:", product);
-    return;
-  }
+  const handleAddToCart = async (product) => {
+    if (!product || !product._id) return;
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+    
+    const selected = selectedQuantities[product._id] || product.quantities[0];
+    if (!selected) return;
 
-  // ✅ Get userId from localStorage
-  const userId = localStorage.getItem("userId");
-
-  if (!userId) {
-    console.error("User ID not found in local storage");
-    return;
-  }
-
-  const selected = selectedQuantities[product._id];
-  if (!selected) {
-    console.error("No quantity selected for product:", product.name);
-    return;
-  }
-
-  const cartItem = {
-    userId, // Now it's properly retrieved
-    productId: product._id,
-    quantity: selected.quantity,
-    price: selected.price,
-  };
-
-  try {
-    const response = await fetch("http://localhost:5000/api/cart/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(cartItem),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to add item to cart");
-    }
-
-    const data = await response.json();
-    console.log("Cart updated:", data);
-
-    // Dispatch Redux action if needed
-    dispatch(addToCart({
-      id: product._id,
-      name: product.name,
-      price: selected.price,
+    const cartItem = {
+      userId,
+      productId: product._id,
       quantity: selected.quantity,
-    }));
+      price: selected.price,
+    };
 
-    // Show success message
-    setSnackbarMessage(`${product.name} added to cart!`);
-    setSnackbarOpen(true);
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    setSnackbarMessage("Failed to add item to cart");
-    setSnackbarOpen(true);
-  }
-};
-
-
+    try {
+      await axios.post("http://localhost:5000/api/cart/add", cartItem);
+      dispatch(addToCart({ id: product._id, name: product.name, price: selected.price, quantity: selected.quantity }));
+      setSnackbarMessage(`${product.name} added to cart!`);
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage("Failed to add item to cart");
+      setSnackbarOpen(true);
+    }
+  };
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h4" gutterBottom align="center">
-        Products
+      <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
+        Browse Products
       </Typography>
 
-      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
-        <Tabs
-          value={selectedCategory}
-          onChange={(e, newValue) => setSelectedCategory(newValue)}
-          variant="scrollable"
-          scrollButtons="auto"
-        >
-          <Tab label="All Products" value="All Products" />
-          {categories.map((category) => (
-            <Tab key={category} label={category} value={category} />
-          ))}
-        </Tabs>
-      </Box>
-
-      <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
         <TextField
           label="Search Products"
           variant="outlined"
@@ -147,6 +95,19 @@ const handleAddToCart = async (product) => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </Box>
+
+      <Tabs
+        value={selectedCategory}
+        onChange={(e, newValue) => setSelectedCategory(newValue)}
+        variant="scrollable"
+        scrollButtons="auto"
+        sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
+      >
+        <Tab label="All Products" value="All Products" />
+        {categories.map((category) => (
+          <Tab key={category} label={category} value={category} />
+        ))}
+      </Tabs>
 
       <Grid container spacing={3}>
         {loading ? (
@@ -157,52 +118,28 @@ const handleAddToCart = async (product) => {
               <Skeleton width="60%" />
             </Grid>
           ))
-        ) : filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <Grid item key={product._id} xs={6} sm={6} md={3}>
-              <Card sx={{ boxShadow: 3, borderRadius: 2, textAlign: "center", transition: "0.3s", "&:hover": { transform: "scale(1.05)" } }}>
-                {product.image && (
-                  <CardMedia
-                    component="img"
-                    height="auto"
-                    image={product.image}
-                    alt={product.name}
-                    sx={{ objectFit: "cover", loading: "lazy" }}
-                  />
-                )}
+        ) : searchFilteredProducts.length > 0 ? (
+          searchFilteredProducts.map((product) => (
+            <Grid item key={product._id} xs={12} sm={6} md={3}>
+              <Card  sx={{ boxShadow: 3, borderRadius: 2, textAlign: "center", transition: "0.3s", "&:hover": { transform: "scale(1.05)" } }}>
+                <CardMedia
+                  component="img"
+                  height="180"
+                  image={product.image}
+                  alt={product.name}
+                  sx={{ objectFit: "cover" }}
+                />
                 <CardContent>
-                  <Typography variant="h6" color="primary">
+                  <Typography variant="h6" color="primary" fontWeight="bold">
                     {product.name}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography variant="body2" color="textSecondary" gutterBottom>
                     {product.description}
                   </Typography>
-
-                  <Select
-                    value={selectedQuantities[product._id]?.id || ""}
-                    onChange={(e) => {
-                      const selected = product.quantities.find((q) => q._id === e.target.value);
-                      setSelectedQuantities((prev) => ({
-                        ...prev,
-                        [product._id]: selected,
-                      }));
-                    }}
-                    fullWidth
-                    sx={{ mt: 1 }}
-                  >
-                    {product.quantities.map((q) => (
-                      <MenuItem key={q._id} value={q._id}>
-                        {q.quantity} kg - ₹{q.price}
-                      </MenuItem>
-                    ))}
-                  </Select>
-
-                  {selectedQuantities[product._id] && (
-                    <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                      Selected: {selectedQuantities[product._id].quantity} kg - ₹{selectedQuantities[product._id].price}
-                    </Typography>
-                  )}
-
+                  <Divider sx={{ my: 1 }} />
+                  <Typography variant="subtitle2" color="secondary">
+                    ₹{product.quantities[0]?.price} / 1kg
+                  </Typography>
                   <Button
                     variant="contained"
                     color="success"
@@ -222,7 +159,6 @@ const handleAddToCart = async (product) => {
         )}
       </Grid>
 
-      {/* Snackbar Notification */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
