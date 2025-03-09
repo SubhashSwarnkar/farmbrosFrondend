@@ -27,7 +27,7 @@ function Products({ storeId }) {
       if (!storeId) return;
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/products/store/${storeId}/categories-products`);
+        const response = await axios.get(`https://farmbros-obhk.onrender.com/api/products/store/${storeId}/categories-products`);
         const allProductsList = response.data.flatMap((cat) => cat.products);
         setAllProducts(allProductsList);
         setCategories(response.data.map((cat) => cat.category));
@@ -70,7 +70,7 @@ function Products({ storeId }) {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/cart/add", cartItem);
+      await axios.post("https://farmbros-obhk.onrender.com/api/cart/add", cartItem);
       dispatch(addToCart({ id: product._id, name: product.name, price: selected.price, quantity: selected.quantity }));
       setSnackbarMessage(`${product.name} added to cart!`);
       setSnackbarOpen(true);

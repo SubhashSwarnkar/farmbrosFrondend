@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://farmbros-obhk.onrender.com/api";
 
 export const fetchStores = async () => {
   const response = await axios.get(`${API_BASE_URL}/stores`);

@@ -43,7 +43,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/auth/profile/${userId}`, {
+        const { data } = await axios.get(`https://farmbros-obhk.onrender.com/api/auth/profile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setFormData(data);
@@ -96,7 +96,7 @@ const ProfilePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/auth/profile/${userId}`, formData, {
+      await axios.put(`https://farmbros-obhk.onrender.com/api/auth/profile/${userId}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Profile updated successfully!");

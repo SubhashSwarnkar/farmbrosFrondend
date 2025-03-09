@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000/api/cart";
+const API_BASE_URL = "https://farmbros-obhk.onrender.com/api/cart";
 // Add to cart API call
 export const addToCart = createAsyncThunk("cart/addToCart", async (product) => {
-  const response = await axios.post("http://localhost:5000/api/cart/add", product);
+  const response = await axios.post("https://farmbros-obhk.onrender.com/api/cart/add", product);
   return response.data;
 });
 

@@ -13,7 +13,7 @@ function Home() {
   useEffect(() => {
     async function fetchStores() {
       try {
-        const response = await axios.get("http://localhost:5000/api/stores");
+        const response = await axios.get("https://farmbros-obhk.onrender.com/api/stores");
         setStores(response.data);
       } catch (error) {
         console.error("Error fetching stores:", error);
