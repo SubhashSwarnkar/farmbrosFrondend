@@ -1,0 +1,13 @@
+Fonts used in this design:
+
+Font: Alegreya
+Author: Juan Pablo del Peral
+Url: http://www.fontsquirrel.com/fonts/alegreya
+
+Font: Amble
+Author: Punchcut
+Url: http://www.fontsquirrel.com/fonts/amble
+
+Font: Montserrat
+Author: Julieta Ulanovsky
+Url: http://www.fontsquirrel.com/fonts/montserrat

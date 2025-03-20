@@ -33,7 +33,7 @@ function Home() {
     <Box sx={{ p: 4 }}>
       <Navbar />
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h4">Welcome to FarmBors</Typography>
+        <Typography variant="h4"></Typography>
       </Box>
 
       {/* Store Selection Dialog */}

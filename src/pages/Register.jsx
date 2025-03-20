@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Container,
@@ -8,6 +9,7 @@ import {
   Typography,
   Link,
   Box,
+  CircularProgress,
 } from "@mui/material";
 
 function Register() {
@@ -15,9 +17,12 @@ function Register() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Fix: Define navigate function
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when request starts
     try {
       const res = await axios.post("https://farmbros-obhk.onrender.com/api/auth/register", {
         name,
@@ -25,10 +30,14 @@ function Register() {
         phone,
         password,
       });
+
       console.log(res.data);
       alert("Registration successful! You can now log in.");
+      navigate("/"); // Fix: Navigate to login page after success
     } catch (error) {
       alert("Registration failed");
+    } finally {
+      setLoading(false); // Set loading to false after request finishes
     }
   };
 
@@ -48,6 +57,7 @@ function Register() {
             variant="outlined"
             margin="normal"
             onChange={(e) => setName(e.target.value)}
+            required
           />
           <TextField
             fullWidth
@@ -56,6 +66,7 @@ function Register() {
             margin="normal"
             type="email"
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <TextField
             fullWidth
@@ -63,6 +74,7 @@ function Register() {
             variant="outlined"
             margin="normal"
             onChange={(e) => setPhone(e.target.value)}
+            required
           />
           <TextField
             fullWidth
@@ -71,15 +83,17 @@ function Register() {
             margin="normal"
             type="password"
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            sx={{ marginTop: 2 }}
+            type="submit"
+            sx={{ mt: 2, py: 1.5, fontSize: "1rem", fontWeight: "bold" }}
+            disabled={loading}
           >
-            Register
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
           </Button>
         </form>
         <Box mt={2}>

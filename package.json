@@ -15,6 +15,7 @@
     "@mui/icons-material": "^6.4.5",
     "@mui/material": "^6.4.4",
     "@reduxjs/toolkit": "^2.5.1",
+    "@splidejs/react-splide": "^0.7.12",
     "axios": "^1.7.9",
     "leaflet": "^1.9.4",
     "react": "^19.0.0",
