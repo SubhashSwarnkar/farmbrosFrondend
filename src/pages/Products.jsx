@@ -90,7 +90,7 @@ function Products({ storeId }) {
   };
 
   return (
-    <Container sx={{ p: 4 }}>
+    <Box sx={{ p: 4 }}>
       <Box><Banners /></Box>
     
       {/* Search Box */}
@@ -125,7 +125,7 @@ function Products({ storeId }) {
           );
 
           return (
-            <Box key={category} sx={{ mb: 4, position: "relative" }}>
+            <Container key={category} sx={{ mb: 4, position: "relative" }}>
               <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
                 {category}
               </Typography>
@@ -168,13 +168,13 @@ function Products({ storeId }) {
                     >
                       <CardMedia
                         component="img"
-                        height="140"
+                        height="120"
                         image={product.image}
                         alt={product.name}
                         sx={{ objectFit: "cover" }}
                       />
                       <CardContent>
-                        <Typography variant="h6" color="primary" fontWeight="bold">
+                        <Typography variant="h6" color="green" fontWeight="bold">
                           {product.name}
                         </Typography>
                         <Typography variant="body2" color="textSecondary" gutterBottom>
@@ -211,7 +211,7 @@ function Products({ storeId }) {
                   <ArrowForwardIos />
                 </IconButton>
               )}
-            </Box>
+            </Container>
           );
         })
       )}
@@ -221,7 +221,7 @@ function Products({ storeId }) {
         <Alert severity="success" onClose={() => setSnackbarOpen(false)}>{snackbarMessage}</Alert>
       </Snackbar>
       <Box><Footer/></Box>
-    </Container>
+    </Box>
     
   );
 }
